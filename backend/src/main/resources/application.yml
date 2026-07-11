@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: plethora-tpo
+  datasource:
+    url: jdbc:mysql://localhost:3306/plethora_tpo?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  jwt:
+    secret: ${JWT_SECRET:dev-only-secret-key-change-me-please-this-needs-to-be-long-enough-for-hs256}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  admin:
+    email: ${ADMIN_EMAIL:admin@plethora.local}
+    password: ${ADMIN_PASSWORD:Admin@123}
+  invite-codes:
+    tpo: ${TPO_INVITE_CODE:tpo-invite-dev-only}
+    hod: ${HOD_INVITE_CODE:hod-invite-dev-only}
