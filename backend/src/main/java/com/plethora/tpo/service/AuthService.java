@@ -6,6 +6,8 @@ import com.plethora.tpo.dto.auth.RegisterCompanyRequest;
 import com.plethora.tpo.dto.auth.RegisterHodRequest;
 import com.plethora.tpo.dto.auth.RegisterStudentRequest;
 import com.plethora.tpo.dto.auth.RegisterTpoRequest;
+import com.plethora.tpo.dto.company.CompanyProfileResponse;
+import com.plethora.tpo.dto.company.CreateCompanyRequest;
 import com.plethora.tpo.dto.hod.CreateHodRequest;
 import com.plethora.tpo.dto.hod.HodResponse;
 import com.plethora.tpo.entity.Company;
@@ -218,6 +220,43 @@ public class AuthService {
                 .fullName(hod.getFullName())
                 .department(hod.getDepartment())
                 .phone(hod.getPhone())
+                .build();
+    }
+
+    @Transactional
+    public CompanyProfileResponse registerCompanyByAdmin(CreateCompanyRequest request, User actingAdmin) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BadRequestException("An account with this email already exists");
+        }
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .passwordHash(passwordEncoder.encode(request.getPassword()))
+                .role(Role.COMPANY)
+                .build();
+        user = userRepository.save(user);
+
+        Company company = Company.builder()
+                .user(user)
+                .companyName(request.getCompanyName())
+                .industry(request.getIndustry())
+                .website(request.getWebsite())
+                .contactPerson(request.getContactPerson())
+                .description(request.getDescription())
+                .build();
+        companyRepository.save(company);
+
+        auditLogService.log(actingAdmin, "CREATE_COMPANY", "Company", company.getId(),
+                "TPO Admin created Company account: " + company.getCompanyName());
+
+        return CompanyProfileResponse.builder()
+                .id(company.getId())
+                .email(user.getEmail())
+                .companyName(company.getCompanyName())
+                .industry(company.getIndustry())
+                .website(company.getWebsite())
+                .contactPerson(company.getContactPerson())
+                .description(company.getDescription())
                 .build();
     }
 
