@@ -35,7 +35,11 @@ export default function Login() {
         <Typography.Title level={3} style={{ textAlign: 'center', marginBottom: 24 }}>
           Plethora — Sign In
         </Typography.Title>
-        <Form layout="vertical" onFinish={onFinish}>
+        <Form
+          layout="vertical"
+          onFinish={onFinish}
+          initialValues={import.meta.env.DEV ? { email: 'admin@plethora.local', password: 'Admin@123' } : undefined}
+        >
           <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
             <Input placeholder="you@example.com" />
           </Form.Item>

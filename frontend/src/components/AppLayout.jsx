@@ -1,6 +1,6 @@
 import { Layout, Menu, Space, Typography, Avatar, Button } from 'antd';
 import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
-import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import NotificationsBell from './NotificationsBell';
 
@@ -19,6 +19,7 @@ const MENUS = {
     { key: '/admin/students', label: 'Students' },
     { key: '/admin/companies', label: 'Companies' },
     { key: '/admin/hods', label: 'Manage HODs' },
+    { key: '/admin/users', label: 'User Management' },
     { key: '/admin/audit-logs', label: 'Audit Log' },
   ],
   COMPANY: [

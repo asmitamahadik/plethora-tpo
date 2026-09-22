@@ -45,11 +45,11 @@ export default function DriveList() {
                 title={drive.title}
                 extra={<Tag color="blue">{drive.companyName}</Tag>}
                 actions={[
-                  <Button type="link" onClick={() => setSelected(drive)}>View details</Button>,
+                  <Button key="view" type="link" onClick={() => setSelected(drive)}>View details</Button>,
                   applied.has(drive.id) ? (
-                    <Tag color="green">Applied</Tag>
+                    <Tag key="status" color="green">Applied</Tag>
                   ) : (
-                    <Button type="primary" size="small" onClick={() => handleApply(drive.id)}>
+                    <Button key="apply" type="primary" size="small" onClick={() => handleApply(drive.id)}>
                       Apply
                     </Button>
                   ),

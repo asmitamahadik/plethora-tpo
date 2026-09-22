@@ -28,15 +28,23 @@ export default function ManageDrives() {
   };
 
   const handleClose = async (id) => {
-    await closeDrive(id);
-    message.success('Drive closed');
-    load();
+    try {
+      await closeDrive(id);
+      message.success('Drive closed');
+      load();
+    } catch (err) {
+      message.error(err.response?.data?.message || 'Could not close drive');
+    }
   };
 
   const handleDelete = async (id) => {
-    await deleteDrive(id);
-    message.success('Drive deleted');
-    load();
+    try {
+      await deleteDrive(id);
+      message.success('Drive deleted');
+      load();
+    } catch (err) {
+      message.error(err.response?.data?.message || 'Could not delete drive');
+    }
   };
 
   const columns = [

@@ -21,7 +21,7 @@ export default function Applicants({ mode }) {
     getDrive(id).then(setDrive).catch(() => {});
   };
 
-  useEffect(load, [id]);
+  useEffect(load, [id, mode]);
 
   const handleUpdate = async (applicationId) => {
     const status = pendingStatus[applicationId];
