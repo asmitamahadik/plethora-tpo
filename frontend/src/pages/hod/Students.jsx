@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Table, Typography } from 'antd';
+import { Table } from 'antd';
 import { listDepartmentStudents } from '../../api/hods';
+import BackButton from '../../components/BackButton';
+import EntityCell from '../../components/EntityCell';
+import PageHeader from '../../components/PageHeader';
 
 export default function HodStudents() {
   const [students, setStudents] = useState([]);
@@ -10,17 +13,32 @@ export default function HodStudents() {
   }, []);
 
   const columns = [
-    { title: 'Name', dataIndex: 'fullName' },
-    { title: 'Roll number', dataIndex: 'rollNumber' },
+    {
+      title: 'Student',
+      dataIndex: 'fullName',
+      render: (_, record) => <EntityCell name={record.fullName} secondary={record.rollNumber} />,
+    },
     { title: 'Department', dataIndex: 'department' },
-    { title: 'CGPA', dataIndex: 'cgpa' },
-    { title: 'Backlogs', dataIndex: 'backlogs' },
+    {
+      title: 'CGPA',
+      dataIndex: 'cgpa',
+      align: 'right',
+      sorter: (a, b) => (a.cgpa ?? 0) - (b.cgpa ?? 0),
+      render: (v) => <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{v}</span>,
+    },
+    {
+      title: 'Backlogs',
+      dataIndex: 'backlogs',
+      align: 'right',
+      render: (v) => <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{v ?? 0}</span>,
+    },
     { title: 'Email', dataIndex: 'email' },
   ];
 
   return (
     <div>
-      <Typography.Title level={3}>Students</Typography.Title>
+      <BackButton />
+      <PageHeader title="Students" subtitle="Students in your department" />
       <Table rowKey="id" columns={columns} dataSource={students} />
     </div>
   );

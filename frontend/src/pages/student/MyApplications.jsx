@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Steps, Table, Typography } from 'antd';
 import { myApplications } from '../../api/applications';
+import BackButton from '../../components/BackButton';
+import PageHeader from '../../components/PageHeader';
 import StatusTag from '../../components/StatusTag';
 
 const STEP_ORDER = ['APPLIED', 'SHORTLISTED', 'INTERVIEW_SCHEDULED', 'SELECTED'];
@@ -22,7 +24,8 @@ export default function MyApplications() {
 
   return (
     <div>
-      <Typography.Title level={3}>My Applications</Typography.Title>
+      <BackButton />
+      <PageHeader title="My Applications" subtitle="Track every drive you've applied to" />
       <Table
         rowKey="id"
         columns={columns}

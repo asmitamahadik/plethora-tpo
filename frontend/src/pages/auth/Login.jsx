@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Card, Form, Input, Typography, message } from 'antd';
+import { Button, Card, Form, Input, Typography, message, theme as antdTheme } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { login as loginApi } from '../../api/auth';
 import { useAuth } from '../../auth/AuthContext';
@@ -15,6 +15,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { applyAuth } = useAuth();
   const navigate = useNavigate();
+  const { token } = antdTheme.useToken();
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -30,7 +31,7 @@ export default function Login() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token.colorBgLayout }}>
       <Card style={{ width: 380 }}>
         <Typography.Title level={3} style={{ textAlign: 'center', marginBottom: 24 }}>
           Plethora — Sign In

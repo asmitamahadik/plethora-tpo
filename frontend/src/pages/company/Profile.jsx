@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Form, Input, Typography, message } from 'antd';
+import { Button, Card, Form, Input, message } from 'antd';
 import { getMyCompanyProfile, updateMyCompanyProfile } from '../../api/companies';
+import BackButton from '../../components/BackButton';
+import PageHeader from '../../components/PageHeader';
 
 export default function CompanyProfile() {
   const [form] = Form.useForm();
@@ -24,8 +26,9 @@ export default function CompanyProfile() {
 
   return (
     <div>
-      <Typography.Title level={3}>Company Profile</Typography.Title>
-      <Card style={{ maxWidth: 560 }}>
+      <BackButton />
+      <PageHeader title="Company Profile" subtitle="Keep your recruiting contact details up to date" />
+      <Card bordered={false} style={{ maxWidth: 560 }}>
         <Form layout="vertical" form={form} onFinish={onFinish}>
           <Form.Item name="companyName" label="Company name" rules={[{ required: true }]}>
             <Input />

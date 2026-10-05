@@ -36,6 +36,16 @@ body {
               color 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
+.stat-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--app-shadow-hover);
+}
+
 /* Theme toggle icon: fade + rotate pop whenever the icon swaps (key={mode} remounts it) */
 .theme-toggle-icon {
   display: inline-flex;

@@ -1,9 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Button, Input, Select, Space, Table, Typography, message } from 'antd';
+import { Button, Input, Select, Space, Table, message } from 'antd';
 import { useParams } from 'react-router-dom';
 import { applicationsForDrive, updateApplicationStatus, updateInterviewStatus } from '../../api/applications';
 import { departmentApplicantsForDrive } from '../../api/hods';
 import { getDrive } from '../../api/drives';
+import BackButton from '../../components/BackButton';
+import EntityCell from '../../components/EntityCell';
+import PageHeader from '../../components/PageHeader';
 import StatusTag from '../../components/StatusTag';
 
 const STATUS_OPTIONS = ['APPLIED', 'SHORTLISTED', 'INTERVIEW_SCHEDULED', 'SELECTED', 'REJECTED'];
@@ -41,9 +44,18 @@ export default function Applicants({ mode }) {
   };
 
   const columns = [
-    { title: 'Student', dataIndex: 'studentName' },
-    { title: 'Roll number', dataIndex: 'rollNumber' },
-    { title: 'CGPA', dataIndex: 'cgpa' },
+    {
+      title: 'Student',
+      dataIndex: 'studentName',
+      render: (_, record) => <EntityCell name={record.studentName} secondary={record.rollNumber} color="#fa541c" />,
+    },
+    {
+      title: 'CGPA',
+      dataIndex: 'cgpa',
+      align: 'right',
+      sorter: (a, b) => (a.cgpa ?? 0) - (b.cgpa ?? 0),
+      render: (v) => <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{v}</span>,
+    },
     { title: 'Status', dataIndex: 'status', render: (s) => <StatusTag status={s} /> },
     ...(mode === 'hod' ? [] : [{
       title: 'Update status',
@@ -70,7 +82,11 @@ export default function Applicants({ mode }) {
 
   return (
     <div>
-      <Typography.Title level={3}>Applicants{drive ? ` — ${drive.title}` : ''}</Typography.Title>
+      <BackButton />
+      <PageHeader
+        title={`Applicants${drive ? ` — ${drive.title}` : ''}`}
+        subtitle="Review applicants and move them through the placement pipeline"
+      />
       <Table rowKey="id" columns={columns} dataSource={applications} />
     </div>
   );

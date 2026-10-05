@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Badge, Button, Dropdown, Empty, List } from 'antd';
+import { Badge, Button, Dropdown, Empty, List, theme as antdTheme } from 'antd';
 import { BellOutlined } from '@ant-design/icons';
 import { markNotificationRead, myNotifications } from '../api/notifications';
 
 export default function NotificationsBell() {
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
+  const { token } = antdTheme.useToken();
 
   const load = () => {
     myNotifications().then(setNotifications).catch(() => {});
@@ -28,7 +29,18 @@ export default function NotificationsBell() {
   };
 
   const menu = (
-    <div style={{ width: 340, maxHeight: 400, overflowY: 'auto', background: 'var(--ant-color-bg-elevated, #fff)', border: '1px solid #eee', borderRadius: 8, padding: 8 }}>
+    <div
+      style={{
+        width: 340,
+        maxHeight: 400,
+        overflowY: 'auto',
+        background: token.colorBgElevated,
+        border: `1px solid ${token.colorBorderSecondary}`,
+        borderRadius: 8,
+        padding: 8,
+        boxShadow: token.boxShadowSecondary,
+      }}
+    >
       {notifications.length === 0 ? (
         <Empty description="No notifications" style={{ padding: 16 }} />
       ) : (

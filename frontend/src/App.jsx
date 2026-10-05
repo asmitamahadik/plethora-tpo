@@ -3,7 +3,7 @@ import { Spin } from 'antd';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from './auth/AuthContext';
 import ProtectedRoute from './auth/ProtectedRoute';
-import AppLayout from './components/AppLayout';
+import AppLayout from './components/layout/AppLayout';
 
 const Login = lazy(() => import('./pages/auth/Login'));
 const Register = lazy(() => import('./pages/auth/Register'));
