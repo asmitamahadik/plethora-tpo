@@ -3,6 +3,8 @@ package com.plethora.tpo.controller;
 import com.plethora.tpo.dto.admin.AdminUserResponse;
 import com.plethora.tpo.dto.admin.AdminUserUpdateRequest;
 import com.plethora.tpo.dto.admin.PagedResponse;
+import com.plethora.tpo.dto.admin.ResetPasswordRequest;
+import com.plethora.tpo.dto.admin.ResetPasswordResponse;
 import com.plethora.tpo.dto.company.CompanyProfileResponse;
 import com.plethora.tpo.dto.company.CreateCompanyRequest;
 import com.plethora.tpo.entity.Role;
@@ -53,6 +55,15 @@ public class AdminController {
                                           @PathVariable Long id,
                                           @Valid @RequestBody AdminUserUpdateRequest request) {
         return adminUserService.updateUser(id, currentUserProvider.resolve(principal), request);
+    }
+
+    @PutMapping("/api/admin/users/{id}/password")
+    @PreAuthorize("hasRole('TPO_ADMIN')")
+    public ResetPasswordResponse resetPassword(@AuthenticationPrincipal UserPrincipal principal,
+                                                  @PathVariable Long id,
+                                                  @RequestBody ResetPasswordRequest request) {
+        String plainPassword = adminUserService.resetPassword(id, currentUserProvider.resolve(principal), request.getNewPassword());
+        return ResetPasswordResponse.builder().password(plainPassword).build();
     }
 
     @DeleteMapping("/api/admin/users/{id}")

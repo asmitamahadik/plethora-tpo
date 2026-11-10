@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Button, Popconfirm, Space, Table, Typography, message } from 'antd';
+import { Button, Popconfirm, Segmented, Table, message } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { closeDrive, deleteDrive, listMyCompanyDrives, publishDrive } from '../../api/drives';
+import BackButton from '../../components/BackButton';
 import DriveFormModal from '../../components/DriveFormModal';
+import DriveListView from '../../components/DriveListView';
+import PageHeader from '../../components/PageHeader';
 import StatusTag from '../../components/StatusTag';
 import { getMyCompanyProfile } from '../../api/companies';
 
@@ -11,6 +15,7 @@ export default function CompanyMyDrives() {
   const [companyId, setCompanyId] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingDrive, setEditingDrive] = useState(null);
+  const [view, setView] = useState('Table');
   const navigate = useNavigate();
 
   const load = () => {
@@ -52,48 +57,65 @@ export default function CompanyMyDrives() {
     }
   };
 
+  const rowActions = (record) => [
+    <Button key="applicants" size="small" onClick={() => navigate(`/company/drives/${record.id}/applicants`)}>
+      Applicants
+    </Button>,
+    <Button key="edit" size="small" onClick={() => { setEditingDrive(record); setModalOpen(true); }}>
+      Edit
+    </Button>,
+    record.status === 'DRAFT' && (
+      <Button key="publish" size="small" type="primary" onClick={() => handlePublish(record.id)}>
+        Publish
+      </Button>
+    ),
+    record.status === 'PUBLISHED' && (
+      <Button key="close" size="small" onClick={() => handleClose(record.id)}>
+        Close
+      </Button>
+    ),
+    <Popconfirm key="delete" title="Delete this drive?" onConfirm={() => handleDelete(record.id)}>
+      <Button size="small" danger>Delete</Button>
+    </Popconfirm>,
+  ].filter(Boolean);
+
   const columns = [
     { title: 'Title', dataIndex: 'title' },
     { title: 'Status', dataIndex: 'status', render: (s) => <StatusTag status={s} /> },
-    { title: 'Min CGPA', dataIndex: 'minCgpa' },
+    {
+      title: 'Min CGPA',
+      dataIndex: 'minCgpa',
+      align: 'right',
+      sorter: (a, b) => (a.minCgpa ?? 0) - (b.minCgpa ?? 0),
+      render: (v) => <span style={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>{v}</span>,
+    },
     { title: 'Deadline', dataIndex: 'applicationDeadline' },
     {
       title: 'Actions',
-      render: (_, record) => (
-        <Space>
-          <Button size="small" onClick={() => navigate(`/company/drives/${record.id}/applicants`)}>
-            Applicants
-          </Button>
-          <Button size="small" onClick={() => { setEditingDrive(record); setModalOpen(true); }}>
-            Edit
-          </Button>
-          {record.status === 'DRAFT' && (
-            <Button size="small" type="primary" onClick={() => handlePublish(record.id)}>
-              Publish
-            </Button>
-          )}
-          {record.status === 'PUBLISHED' && (
-            <Button size="small" onClick={() => handleClose(record.id)}>
-              Close
-            </Button>
-          )}
-          <Popconfirm title="Delete this drive?" onConfirm={() => handleDelete(record.id)}>
-            <Button size="small" danger>Delete</Button>
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_, record) => <div style={{ display: 'flex', gap: 8 }}>{rowActions(record)}</div>,
     },
   ];
 
   return (
     <div>
-      <Space style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-        <Typography.Title level={3} style={{ margin: 0 }}>My Drives</Typography.Title>
-        <Button type="primary" onClick={() => { setEditingDrive(null); setModalOpen(true); }}>
-          New Drive
-        </Button>
-      </Space>
-      <Table rowKey="id" columns={columns} dataSource={drives} />
+      <BackButton />
+      <PageHeader
+        title="My Drives"
+        subtitle="Manage the placement drives you've posted"
+        actions={
+          <>
+            <Segmented options={['Table', 'List']} value={view} onChange={setView} />
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingDrive(null); setModalOpen(true); }}>
+              New Drive
+            </Button>
+          </>
+        }
+      />
+      {view === 'Table' ? (
+        <Table rowKey="id" columns={columns} dataSource={drives} />
+      ) : (
+        <DriveListView drives={drives} renderActions={rowActions} />
+      )}
       <DriveFormModal
         open={modalOpen}
         drive={editingDrive}

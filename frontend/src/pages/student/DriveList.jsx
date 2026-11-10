@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Button, Card, Descriptions, Empty, List, Modal, Tag, Typography, message } from 'antd';
+import { Button, Card, Descriptions, Empty, List, Modal, Tag, message } from 'antd';
 import { listDrives } from '../../api/drives';
 import { applyToDrive, myApplications } from '../../api/applications';
+import BackButton from '../../components/BackButton';
+import PageHeader from '../../components/PageHeader';
 
 export default function DriveList() {
   const [drives, setDrives] = useState([]);
@@ -32,7 +34,8 @@ export default function DriveList() {
 
   return (
     <div>
-      <Typography.Title level={3}>Placement Drives</Typography.Title>
+      <BackButton />
+      <PageHeader title="Placement Drives" subtitle="Drives you're eligible to apply to" />
       {drives.length === 0 ? (
         <Empty description="No open drives match your profile right now" />
       ) : (

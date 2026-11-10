@@ -16,20 +16,28 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AdminUserService {
 
+    private static final String PASSWORD_CHARS =
+            "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     private final UserRepository userRepository;
     private final StudentRepository studentRepository;
     private final CompanyRepository companyRepository;
     private final HodRepository hodRepository;
     private final AuditLogService auditLogService;
+    private final PasswordEncoder passwordEncoder;
 
     public PagedResponse<AdminUserResponse> search(Role role, String search, int page, int size) {
         Pageable pageable = PageRequest.of(Math.max(page, 0), size < 1 ? 10 : size, Sort.by("createdAt").descending());
@@ -81,10 +89,22 @@ public class AdminUserService {
                 if (StringUtils.hasText(request.getDepartment())) {
                     hod.setDepartment(request.getDepartment());
                 }
+                if (request.getPhone() != null) {
+                    hod.setPhone(request.getPhone());
+                }
                 hodRepository.save(hod);
             });
             case COMPANY -> companyRepository.findByUserId(user.getId()).ifPresent(company -> {
                 company.setCompanyName(request.getName());
+                if (request.getContactPerson() != null) {
+                    company.setContactPerson(request.getContactPerson());
+                }
+                if (request.getWebsite() != null) {
+                    company.setWebsite(request.getWebsite());
+                }
+                if (request.getIndustry() != null) {
+                    company.setIndustry(request.getIndustry());
+                }
                 companyRepository.save(company);
             });
             case TPO_ADMIN -> {
@@ -109,6 +129,32 @@ public class AdminUserService {
 
         auditLogService.log(actingAdmin, "DELETE_USER", "User", user.getId(),
                 "TPO Admin disabled user account: " + user.getEmail());
+    }
+
+    @Transactional
+    public String resetPassword(Long id, User actingAdmin, String requestedPassword) {
+        User user = findUser(id);
+
+        String plainPassword = StringUtils.hasText(requestedPassword) ? requestedPassword : generateRandomPassword();
+        if (plainPassword.length() < 6) {
+            throw new BadRequestException("Password must be at least 6 characters");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(plainPassword));
+        userRepository.save(user);
+
+        auditLogService.log(actingAdmin, "RESET_PASSWORD", "User", user.getId(),
+                "TPO Admin reset the password for account: " + user.getEmail());
+
+        return plainPassword;
+    }
+
+    private String generateRandomPassword() {
+        StringBuilder sb = new StringBuilder(12);
+        for (int i = 0; i < 12; i++) {
+            sb.append(PASSWORD_CHARS.charAt(RANDOM.nextInt(PASSWORD_CHARS.length())));
+        }
+        return sb.toString();
     }
 
     private User findUser(Long id) {

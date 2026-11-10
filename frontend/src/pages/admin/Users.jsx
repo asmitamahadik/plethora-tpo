@@ -8,14 +8,15 @@ import {
   Modal,
   Popconfirm,
   Select,
-  Space,
   Table,
   Tag,
-  Typography,
   message,
 } from 'antd';
 import { deleteUser, listUsers, updateUser } from '../../api/adminUsers';
 import { useAuth } from '../../auth/AuthContext';
+import BackButton from '../../components/BackButton';
+import EntityCell from '../../components/EntityCell';
+import PageHeader from '../../components/PageHeader';
 
 const ROLE_OPTIONS = [
   { value: 'STUDENT', label: 'Student' },
@@ -94,19 +95,27 @@ export default function AdminUsers() {
   };
 
   const columns = [
-    { title: 'Name', dataIndex: 'name' },
-    { title: 'Email', dataIndex: 'email' },
+    {
+      title: 'User',
+      dataIndex: 'name',
+      render: (_, record) => <EntityCell name={record.name} secondary={record.email} />,
+    },
     { title: 'Role', dataIndex: 'role', render: (r) => <Tag>{r.replaceAll('_', ' ')}</Tag> },
     {
       title: 'Status',
       dataIndex: 'enabled',
       render: (enabled) => <Tag color={enabled ? 'green' : 'red'}>{enabled ? 'Active' : 'Disabled'}</Tag>,
     },
-    { title: 'Created At', dataIndex: 'createdAt', render: (v) => new Date(v).toLocaleString() },
+    {
+      title: 'Created At',
+      dataIndex: 'createdAt',
+      sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+      render: (v) => new Date(v).toLocaleString(),
+    },
     {
       title: 'Actions',
       render: (_, record) => (
-        <Space>
+        <div style={{ display: 'flex', gap: 8 }}>
           <Button size="small" onClick={() => setViewing(record)}>View</Button>
           <Button size="small" onClick={() => openEdit(record)}>Edit</Button>
           <Popconfirm
@@ -119,7 +128,7 @@ export default function AdminUsers() {
               Delete
             </Button>
           </Popconfirm>
-        </Space>
+        </div>
       ),
     },
   ];
@@ -129,25 +138,31 @@ export default function AdminUsers() {
 
   return (
     <div>
-      <Typography.Title level={3}>User Management</Typography.Title>
-      <Space style={{ marginBottom: 16 }}>
-        <Select
-          allowClear
-          placeholder="Filter by role"
-          style={{ width: 180 }}
-          options={ROLE_OPTIONS}
-          value={role}
-          onChange={setRole}
-        />
-        <Input.Search
-          placeholder="Search by email"
-          style={{ width: 240 }}
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onSearch={handleSearch}
-          allowClear
-        />
-      </Space>
+      <BackButton />
+      <PageHeader
+        title="User Management"
+        subtitle="All registered accounts across every role"
+        actions={
+          <>
+            <Select
+              allowClear
+              placeholder="Filter by role"
+              style={{ width: 160 }}
+              options={ROLE_OPTIONS}
+              value={role}
+              onChange={setRole}
+            />
+            <Input.Search
+              placeholder="Search by email"
+              style={{ width: 220 }}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onSearch={handleSearch}
+              allowClear
+            />
+          </>
+        }
+      />
       <Table
         rowKey="id"
         columns={columns}

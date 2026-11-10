@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Button, Card, Form, Input, InputNumber, Typography, message } from 'antd';
 import { getMyStudentProfile, updateMyStudentProfile } from '../../api/students';
+import BackButton from '../../components/BackButton';
+import PageHeader from '../../components/PageHeader';
 
 export default function StudentProfile() {
   const [form] = Form.useForm();
@@ -28,8 +30,9 @@ export default function StudentProfile() {
 
   return (
     <div>
-      <Typography.Title level={3}>My Profile</Typography.Title>
-      <Card style={{ maxWidth: 560 }}>
+      <BackButton />
+      <PageHeader title="My Profile" subtitle="Keep your placement details accurate and up to date" />
+      <Card bordered={false} style={{ maxWidth: 560 }}>
         <Typography.Text type="secondary">Roll number: {rollNumber}</Typography.Text>
         <Form layout="vertical" form={form} onFinish={onFinish} style={{ marginTop: 16 }}>
           <Form.Item name="fullName" label="Full name" rules={[{ required: true }]}>

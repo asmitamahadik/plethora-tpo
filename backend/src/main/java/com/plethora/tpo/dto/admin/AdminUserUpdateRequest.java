@@ -11,5 +11,13 @@ public class AdminUserUpdateRequest {
 
     private String department;
 
+    private String phone;
+
+    private String contactPerson;
+
+    private String website;
+
+    private String industry;
+
     private Boolean enabled;
 }
