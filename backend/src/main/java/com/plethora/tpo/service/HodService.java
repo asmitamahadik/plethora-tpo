@@ -73,10 +73,13 @@ public class HodService {
     private HodResponse toResponse(Hod hod) {
         return HodResponse.builder()
                 .id(hod.getId())
+                .userId(hod.getUser().getId())
                 .email(hod.getUser().getEmail())
                 .fullName(hod.getFullName())
                 .department(hod.getDepartment())
                 .phone(hod.getPhone())
+                .enabled(hod.getUser().isEnabled())
+                .createdAt(hod.getUser().getCreatedAt())
                 .build();
     }
 }

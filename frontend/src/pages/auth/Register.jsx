@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Button, Card, Form, Input, InputNumber, Tabs, Typography, message } from 'antd';
+import { Button, Card, Form, Input, InputNumber, Tabs, Typography, message, theme as antdTheme } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
-import { registerStudent, registerCompany, registerTpo, registerHod } from '../../api/auth';
+import { registerStudent, registerTpo } from '../../api/auth';
 import { useAuth } from '../../auth/AuthContext';
 
 export default function Register() {
@@ -9,6 +9,7 @@ export default function Register() {
   const [activeTab, setActiveTab] = useState('student');
   const { applyAuth } = useAuth();
   const navigate = useNavigate();
+  const { token } = antdTheme.useToken();
 
   const submitStudent = async (values) => {
     setLoading(true);
@@ -17,20 +18,6 @@ export default function Register() {
       applyAuth(auth);
       message.success('Welcome to Plethora!');
       navigate('/student');
-    } catch (err) {
-      message.error(err.response?.data?.message || 'Registration failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const submitCompany = async (values) => {
-    setLoading(true);
-    try {
-      const auth = await registerCompany(values);
-      applyAuth(auth);
-      message.success('Welcome to Plethora!');
-      navigate('/company');
     } catch (err) {
       message.error(err.response?.data?.message || 'Registration failed');
     } finally {
@@ -52,26 +39,15 @@ export default function Register() {
     }
   };
 
-  const submitHod = async (values) => {
-    setLoading(true);
-    try {
-      const auth = await registerHod(values);
-      applyAuth(auth);
-      message.success('Welcome to Plethora!');
-      navigate('/hod');
-    } catch (err) {
-      message.error(err.response?.data?.message || 'Registration failed');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f5f5', padding: 24 }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: token.colorBgLayout, padding: 24 }}>
       <Card style={{ width: 460 }}>
         <Typography.Title level={3} style={{ textAlign: 'center', marginBottom: 8 }}>
           Create your Plethora account
         </Typography.Title>
+        <Typography.Paragraph type="secondary" style={{ textAlign: 'center', marginBottom: 16 }}>
+          Company and HOD accounts are provisioned internally by the TPO office.
+        </Typography.Paragraph>
         <Tabs
           activeKey={activeTab}
           onChange={setActiveTab}
@@ -117,37 +93,6 @@ export default function Register() {
               ),
             },
             {
-              key: 'company',
-              label: 'Company',
-              children: (
-                <Form layout="vertical" onFinish={submitCompany}>
-                  <Form.Item name="companyName" label="Company name" rules={[{ required: true }]}>
-                    <Input />
-                  </Form.Item>
-                  <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
-                    <Input />
-                  </Form.Item>
-                  <Form.Item name="password" label="Password" rules={[{ required: true, min: 6 }]}>
-                    <Input.Password />
-                  </Form.Item>
-                  <Form.Item name="industry" label="Industry">
-                    <Input />
-                  </Form.Item>
-                  <Form.Item name="website" label="Website">
-                    <Input />
-                  </Form.Item>
-                  <Form.Item name="contactPerson" label="Contact person">
-                    <Input />
-                  </Form.Item>
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit" block loading={loading}>
-                      Register as Company
-                    </Button>
-                  </Form.Item>
-                </Form>
-              ),
-            },
-            {
               key: 'tpo',
               label: 'TPO Admin',
               children: (
@@ -165,38 +110,6 @@ export default function Register() {
                   <Form.Item>
                     <Button type="primary" htmlType="submit" block loading={loading}>
                       Register as TPO Admin
-                    </Button>
-                  </Form.Item>
-                </Form>
-              ),
-            },
-            {
-              key: 'hod',
-              label: 'HOD',
-              children: (
-                <Form layout="vertical" onFinish={submitHod}>
-                  <Form.Item name="fullName" label="Full name" rules={[{ required: true }]}>
-                    <Input />
-                  </Form.Item>
-                  <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
-                    <Input />
-                  </Form.Item>
-                  <Form.Item name="password" label="Password" rules={[{ required: true, min: 6 }]}>
-                    <Input.Password />
-                  </Form.Item>
-                  <Form.Item name="department" label="Department" rules={[{ required: true }]}>
-                    <Input placeholder="e.g. Computer Engineering" />
-                  </Form.Item>
-                  <Form.Item name="phone" label="Phone">
-                    <Input />
-                  </Form.Item>
-                  <Form.Item name="inviteCode" label="Invite code" rules={[{ required: true }]}
-                    extra="Provided by your institution's TPO office">
-                    <Input.Password />
-                  </Form.Item>
-                  <Form.Item>
-                    <Button type="primary" htmlType="submit" block loading={loading}>
-                      Register as HOD
                     </Button>
                   </Form.Item>
                 </Form>

@@ -60,12 +60,15 @@ public class CompanyService {
     private CompanyProfileResponse toResponse(Company company) {
         return CompanyProfileResponse.builder()
                 .id(company.getId())
+                .userId(company.getUser().getId())
                 .email(company.getUser().getEmail())
                 .companyName(company.getCompanyName())
                 .industry(company.getIndustry())
                 .website(company.getWebsite())
                 .contactPerson(company.getContactPerson())
                 .description(company.getDescription())
+                .enabled(company.getUser().isEnabled())
+                .createdAt(company.getUser().getCreatedAt())
                 .build();
     }
 }

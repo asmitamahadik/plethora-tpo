@@ -2,8 +2,6 @@ package com.plethora.tpo.service;
 
 import com.plethora.tpo.dto.auth.AuthResponse;
 import com.plethora.tpo.dto.auth.LoginRequest;
-import com.plethora.tpo.dto.auth.RegisterCompanyRequest;
-import com.plethora.tpo.dto.auth.RegisterHodRequest;
 import com.plethora.tpo.dto.auth.RegisterStudentRequest;
 import com.plethora.tpo.dto.auth.RegisterTpoRequest;
 import com.plethora.tpo.dto.company.CompanyProfileResponse;
@@ -47,9 +45,6 @@ public class AuthService {
     @Value("${app.invite-codes.tpo}")
     private String tpoInviteCode;
 
-    @Value("${app.invite-codes.hod}")
-    private String hodInviteCode;
-
     @Transactional
     public AuthResponse registerStudent(RegisterStudentRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -92,41 +87,6 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse registerCompany(RegisterCompanyRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("An account with this email already exists");
-        }
-
-        User user = User.builder()
-                .email(request.getEmail())
-                .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .role(Role.COMPANY)
-                .build();
-        user = userRepository.save(user);
-
-        Company company = Company.builder()
-                .user(user)
-                .companyName(request.getCompanyName())
-                .industry(request.getIndustry())
-                .website(request.getWebsite())
-                .contactPerson(request.getContactPerson())
-                .description(request.getDescription())
-                .build();
-        companyRepository.save(company);
-
-        auditLogService.log(user, "REGISTER", "Company", company.getId(), "Company self-registered: " + company.getCompanyName());
-
-        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().name());
-        return AuthResponse.builder()
-                .token(token)
-                .userId(user.getId())
-                .email(user.getEmail())
-                .role(user.getRole().name())
-                .displayName(company.getCompanyName())
-                .build();
-    }
-
-    @Transactional
     public AuthResponse registerTpoAdmin(RegisterTpoRequest request) {
         if (!tpoInviteCode.equals(request.getInviteCode())) {
             throw new BadRequestException("Invalid invite code");
@@ -151,42 +111,6 @@ public class AuthService {
                 .email(user.getEmail())
                 .role(user.getRole().name())
                 .displayName("TPO Admin")
-                .build();
-    }
-
-    @Transactional
-    public AuthResponse registerHodSelf(RegisterHodRequest request) {
-        if (!hodInviteCode.equals(request.getInviteCode())) {
-            throw new BadRequestException("Invalid invite code");
-        }
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("An account with this email already exists");
-        }
-
-        User user = User.builder()
-                .email(request.getEmail())
-                .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .role(Role.HOD)
-                .build();
-        user = userRepository.save(user);
-
-        Hod hod = Hod.builder()
-                .user(user)
-                .fullName(request.getFullName())
-                .department(request.getDepartment())
-                .phone(request.getPhone())
-                .build();
-        hodRepository.save(hod);
-
-        auditLogService.log(user, "REGISTER", "Hod", hod.getId(), "HOD self-registered: " + hod.getFullName() + " (" + hod.getDepartment() + ")");
-
-        String token = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().name());
-        return AuthResponse.builder()
-                .token(token)
-                .userId(user.getId())
-                .email(user.getEmail())
-                .role(user.getRole().name())
-                .displayName(hod.getFullName())
                 .build();
     }
 
@@ -216,10 +140,13 @@ public class AuthService {
 
         return HodResponse.builder()
                 .id(hod.getId())
+                .userId(user.getId())
                 .email(user.getEmail())
                 .fullName(hod.getFullName())
                 .department(hod.getDepartment())
                 .phone(hod.getPhone())
+                .enabled(user.isEnabled())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 
@@ -251,12 +178,15 @@ public class AuthService {
 
         return CompanyProfileResponse.builder()
                 .id(company.getId())
+                .userId(user.getId())
                 .email(user.getEmail())
                 .companyName(company.getCompanyName())
                 .industry(company.getIndustry())
                 .website(company.getWebsite())
                 .contactPerson(company.getContactPerson())
                 .description(company.getDescription())
+                .enabled(user.isEnabled())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 

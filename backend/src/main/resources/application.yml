@@ -28,4 +28,3 @@ app:
     password: ${ADMIN_PASSWORD:Admin@123}
   invite-codes:
     tpo: ${TPO_INVITE_CODE:tpo-invite-dev-only}
-    hod: ${HOD_INVITE_CODE:hod-invite-dev-only}
