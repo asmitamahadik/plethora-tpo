@@ -15,29 +15,28 @@ A role-based Training and Placement portal that removes manual coordination betw
 
 ## Tech stack
 
-- **Backend:** Spring Boot 3 (Java 21), Spring Security with JWT, Spring Data JPA, MySQL
+- **Backend:** Spring Boot 3 (Java 21), Spring Security with JWT, Spring Data JPA, PostgreSQL
 - **Frontend:** React 18 (Vite) and Ant Design 5
 
 ## Prerequisites
 
 - Java 21
 - Node 18 or later (tested on Node 22.11)
-- A running local MySQL server
+- A running local PostgreSQL server
 
 You don't need Maven installed. The backend includes the Maven wrapper (`./mvnw`).
 
 ## 1. Database setup
 
-Create the database, and a dedicated app user instead of using `root`:
+Create the database, and a dedicated app user instead of using the `postgres` superuser:
 
 ```sql
-CREATE DATABASE IF NOT EXISTS plethora_tpo;
-CREATE USER IF NOT EXISTS 'plethora'@'localhost' IDENTIFIED BY 'change-me';
-GRANT ALL PRIVILEGES ON plethora_tpo.* TO 'plethora'@'localhost';
-FLUSH PRIVILEGES;
+CREATE DATABASE plethora_tpo;
+CREATE USER plethora WITH PASSWORD 'change-me';
+GRANT ALL PRIVILEGES ON DATABASE plethora_tpo TO plethora;
 ```
 
-You can also point the app at an existing user. See `backend/src/main/resources/application.yml`. The `DB_USERNAME` and `DB_PASSWORD` environment variables override the defaults.
+You can also point the app at an existing user. See `backend/src/main/resources/application.yml`. The `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME` and `DB_PASSWORD` environment variables override the defaults.
 
 ## 2. Run the backend
 
