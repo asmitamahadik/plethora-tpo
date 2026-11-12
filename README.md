@@ -4,9 +4,23 @@ Originally built as my final year B.E. project at Sinhgad College of Engineering
 
 A role-based Training and Placement portal that removes manual coordination between students, the TPO office and recruiters. Students browse and apply to placement drives, TPO admins run the process and set eligibility, and companies post drives and manage candidates. Every important change sends a notification and is recorded in an audit log.
 
+## Live demo
+
+- **App:** https://plethora-tpo-frontend.onrender.com
+- **API:** https://plethora-tpo-backend.onrender.com/api
+
+Log in with the seeded TPO Admin account:
+
+- Email: `admin@plethora.local`
+- Password: `Admin@123456`
+
+From there, use **Companies** and **HODs** in the sidebar to provision those accounts (see [Try it out](#try-it-out) below), or register your own Student account at `/register`.
+
+> Hosted on Render's free tier — the backend spins down after inactivity, so the first request can take up to ~50 seconds to wake up.
+
 ## Features
 
-- Three roles: Student, TPO Admin and Company
+- Four roles: Student, TPO Admin, Company and HOD (department head)
 - JWT authentication with Spring Security and role-based access
 - Placement drives with eligibility rules (minimum CGPA, allowed departments, maximum backlogs)
 - Publishing a drive automatically notifies eligible students
@@ -66,12 +80,14 @@ The app opens at http://localhost:5173 and talks to the backend at `http://local
 
 ## Try it out
 
-1. Go to `/register` and create a **Company** account and a **Student** account. Use two different browsers or private windows, or log out between steps.
-2. Log in as the default **TPO Admin**.
-3. Open **Manage Drives**, create a drive for the company, set the eligibility rules and click **Publish**. Eligible students are notified automatically.
-4. Log in as the **Student**. The drive appears under **Placement Drives** if they meet the criteria. Apply to it.
-5. Log in as the **TPO Admin** or the **Company**, open **Applicants** on the drive and move the application through `SHORTLISTED`, `INTERVIEW_SCHEDULED` and `SELECTED` or `REJECTED`. The student gets a notification on every change.
-6. Open **Audit Log** as the TPO Admin to see every drive, eligibility and status change with its actor, action and timestamp.
+Self-signup at `/register` is open for **Student** and **TPO Admin** only. Company and HOD accounts are TPO-provisioned — use the admin account to create them.
+
+1. Log in as the **TPO Admin** (use the [live demo credentials](#live-demo) above, or your own seeded account locally). Open **Companies** and create a Company account. Then go to `/register` and create a **Student** account — use a different browser or private window, or log out between steps.
+2. Back as the **TPO Admin**, open **Manage Drives**, create a drive for the company, set the eligibility rules and click **Publish**. Eligible students are notified automatically.
+3. Log in as the **Student**. The drive appears under **Placement Drives** if they meet the criteria. Apply to it.
+4. Log in as the **TPO Admin** or the **Company**, open **Applicants** on the drive and move the application through `SHORTLISTED`, `INTERVIEW_SCHEDULED` and `SELECTED` or `REJECTED`. The student gets a notification on every change.
+5. Open **Audit Log** as the TPO Admin to see every drive, eligibility and status change with its actor, action and timestamp.
+6. Optionally, open **HODs** as the TPO Admin and create a department HOD account to see the read-only, department-scoped view of students, drives and applicants.
 
 ## Project structure
 
@@ -87,4 +103,4 @@ plethora-tpo/
 ## Security notes
 
 - Change the default admin password and set your own `JWT_SECRET` before running this anywhere other than your own machine.
-- Use a dedicated database user, not `root`.
+- Use a dedicated database user, not the `postgres` superuser.
